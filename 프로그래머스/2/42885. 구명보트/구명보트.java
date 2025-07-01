@@ -1,23 +1,40 @@
-import java.util.Arrays;
+import java.util.*;
+    
+// 최대한 limit에 가깝게 태우는것이 포인트
+// 아 2명까지만 태울 수 있구나 .. 잘못풀었다 ..
 
 class Solution {
     public int solution(int[] people, int limit) {
-        Arrays.sort(people);  // 몸무게 오름차순 정렬
+        int answer = 0;
+        
+        int size = people.length;
+        Arrays.sort(people); // 정렬
+        
+        int start = 0; // 첫 index
+        int end = size -1; // 맨 마지막 index 
+        
+        int boat = people[start]; // 첫번째 애 보트에 태워놓음
 
-        int i = 0;                 // 가장 가벼운 사람
-        int j = people.length - 1; // 가장 무거운 사람
-        int boats = 0;
-
-        while (i <= j) {
-            // 가장 가벼운 사람과 가장 무거운 사람을 함께 태울 수 있다면
-            if (people[i] + people[j] <= limit) {
-                i++;  // 가벼운 사람도 탑승
+        
+        while(start <= end){
+            boat = people[start];
+            
+            // 만약 limit 보다 더 안에 들어와서 두명 탑승 성공
+            if(people[start] + people[end] <= limit){ 
+                start ++;
+                end --;
+                boat = 0; // 보트 비워주기 (맨마지막에 보트 비어있는지 확인하기 위해)
             }
-            // 무거운 사람은 항상 탑승
-            j--;
-            boats++;
-        }
+            // 만약 초과한다 
+            else {
+                end --; 
+            }
+  
+                            answer ++; // 무거운애 보트 태워서 보내기 
 
-        return boats;
+        }
+        // if(boat != 0) answer ++;
+        
+        return answer; 
     }
 }
