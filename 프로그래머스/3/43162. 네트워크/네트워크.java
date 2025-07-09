@@ -2,10 +2,11 @@ import java.util.*;
 
 class Solution {
     static boolean [] visited;
+    static List<Integer> [] list;
 
     public int solution(int n, int[][] computers) {
         int answer = 0;
-        List<Integer> [] list = new ArrayList [n];
+        list = new ArrayList [n];
         visited = new boolean [n];
         
         // 입력값 리스트 형식으로 바꿔주기
@@ -23,28 +24,32 @@ class Solution {
         // 루프 발생시 대처 방법은 ? 1. BFS 일땐 이미 방문했던곳이니 방문 췤 돼있어서 괜찮을듯, DFS 도 맟나가지 
         // 일단 BFS 로 풀어보자 
         
-        Queue<Integer> q = new LinkedList<>();
-        
         for(int i=0; i<n; i++){
             if(visited[i]) continue;
-            q.add(i); 
-            while(!q.isEmpty()){
-                int curr = q.poll();
-                int sizeOfList = list[curr].size();
-                for(int j=0; j < sizeOfList; j++){
-                    int listCurr = list[curr].get(j); 
-                    if(visited[listCurr]) continue; // 이미 방문한 애면 넣지말고 
-                    visited[listCurr] = true; // 방문체크
-                    q.add(listCurr);
-                }
-            } // end of while
-            answer ++; // 네트워크 연결 하나 찾았다
-        } // end of For
+            DFS(i);
+            answer++;
+        }
         
         
         
         return answer;
     }
+    
+    static void DFS (int computer) {
+        // 기저조건 
+        int size = list[computer].size(); 
+        // 기저조건이 필요한가?
+        
+        // 재귀부분
+        for(int i=0; i<size; i++){
+            int index = list[computer].get(i);
+            if(visited[index]) continue;
+            visited[index] = true;
+            DFS(index);
+        }
+    }
+    
+    
     
 //     static void DFS (int computer, int depth) {
 //         // 기저조건
