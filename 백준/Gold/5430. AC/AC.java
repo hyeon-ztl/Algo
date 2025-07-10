@@ -12,19 +12,40 @@ public class Main {
 
             int n = Integer.parseInt(br.readLine());
             int [] arr = new int [n];
-            StringTokenizer st = new StringTokenizer( br.readLine(), ",");
+            char [] tmpArr = br.readLine().toCharArray();
+            int num = 0;
+            int idx = 0;
 
-            if(n>0){
-                String tmp = st.nextToken();
-                arr[0] = Integer.parseInt(tmp.substring(1, n==1? tmp.length()-1: tmp.length()));
-            }
-            if(n>1){
-                for (int i=1; i<n-1; i++){
-                    arr[i] = Integer.parseInt(st.nextToken());
+            for (int i=1; i<tmpArr.length; i++) {
+                if(tmpArr[i] == ']' || tmpArr[i] == ','){
+                    if(num != 0){
+                        arr[idx++] = num;
+                        num = 0;
+                    }
+                    else {
+                        break;
+                    }
+
                 }
-                String tmp = st.nextToken();
-                arr[n-1] = Integer.parseInt(tmp.substring(0,tmp.length()-1));
+                else if (tmpArr[i] >= '0' && tmpArr[i] <= '9'){
+                    num *= 10;
+                    num += tmpArr[i] - '0';
+                }
             }
+
+//            StringTokenizer st = new StringTokenizer( br.readLine(), ",");
+//
+//            if(n>0){
+//                String tmp = st.nextToken();
+//                arr[0] = Integer.parseInt(tmp.substring(1, n==1? tmp.length()-1: tmp.length()));
+//            }
+//            if(n>1){
+//                for (int i=1; i<n-1; i++){
+//                    arr[i] = Integer.parseInt(st.nextToken());
+//                }
+//                String tmp = st.nextToken();
+//                arr[n-1] = Integer.parseInt(tmp.substring(0,tmp.length()-1));
+//            }
 //            System.out.println(Arrays.toString(arr));
 
 
