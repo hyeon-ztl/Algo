@@ -15,38 +15,57 @@ class Solution {
     public int solution(int n, int k, int[] enemy) {
         int answer = 0;
         
-        PriorityQueue<Integer> q = new PriorityQueue<>();
-        
-        int restN = n; 
-        int round = 0;
+        PriorityQueue <Integer> q = new PriorityQueue<>(Collections.reverseOrder());
             
-        while(round < enemy.length) {
+        for(int ent : enemy){
+            q.add(ent);
+            n -= ent;
             
-            int thisRound = enemy[round];
-            
-            // 초반 라운드는 냅다 큐 채우기
-            if(round < k){
-                q.add(thisRound); 
+            if(n < 0){
+                if(k > 0){
+                    int tmp = q.poll();
+                    n += tmp;
+                    k--;
+                }
+                else{
+                    return answer;
+                }
             }
-            // 이번 라운드 애가 큐의 마지막 원소보다 크다면 얘를 면제권 쓰기
-            else if(q.peek() < thisRound){
-                int fromQueue = q.poll();
-                q.add(thisRound);
-                
-                restN -= fromQueue; // 면제권 안쓴거 처리
-            }
-            // 면제권 안쓸때
-            else {
-                restN -= thisRound;
-            }
-            
-            // 최종적으로 이번라운드 성공여부 확인
-            if(restN < 0) break; // 0보다 더 적어졌으면 실패 
-            
-            round++;
+            answer++;
         }
         
+        return answer;
         
-        return round;
+//         int restN = n; 
+//         int round = 0;
+            
+//         while(round < enemy.length) {
+            
+//             int thisRound = enemy[round];
+            
+//             // 초반 라운드는 냅다 큐 채우기
+//             if(round < k){
+//                 q.add(thisRound); 
+//             }
+//             // 이번 라운드 애가 큐의 마지막 원소보다 크다면 얘를 면제권 쓰기
+//             else if(q.peek() < thisRound){
+//                 int fromQueue = q.poll();
+//                 q.add(thisRound);
+                
+//                 restN -= fromQueue; // 면제권 안쓴거 처리
+//             }
+//             // 면제권 안쓸때
+//             else {
+//                 restN -= thisRound;
+//             }
+            
+//             // 최종적으로 이번라운드 성공여부 확인
+//             if(restN < 0) break; // 0보다 더 적어졌으면 실패 
+            
+//             round++;
+//         }
+        
+        
+//         return round;
     }
 }
