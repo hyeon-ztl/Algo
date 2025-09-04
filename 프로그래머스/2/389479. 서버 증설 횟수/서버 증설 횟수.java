@@ -4,31 +4,32 @@ import java.util.*;
 class Solution {
     public int solution(int[] players, int m, int k) {
         int answer = 0;
-        
-        int [] server = new int [24];
-        int [] check = new int [24];
-        
-        for(int i=0; i<24; i++){
+        int [] install = new int[24];
+        int active = 0;
+        int idx = 0;
+    System.out.print("[");
+
+        for(int player : players){
             
-            int lastPlayer = players[i] - server[i]*m;
-            int addServer = 0;
-            
-            if(lastPlayer > 0){
-                    addServer = lastPlayer/m;
-                answer += addServer;
-                check[i] = addServer;
-            }// end of if
-            
-            int time = k;
-            int idx = i;
-            while(time-- > 0 && idx < 24){
-                server[idx++] += addServer;
+            if(idx>= k){
+                active -= install[idx-k]; // 시간이 지나면 사라진다
             }
+            
+            int last = player / m - active;
+            if(last > 0){
+                active += last;
+                install[idx] += last;
+                answer += last;
+            }
+            
+            idx ++;
+        System.out.print(active+", ");
+            
         }
         
-        // System.out.println(Arrays.toString(server));
-        // System.out.println(Arrays.toString(check));
-
+        System.out.println("\n"+Arrays.toString(install));
+        
+        
         
         return answer;
     }
