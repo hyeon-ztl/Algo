@@ -3,33 +3,30 @@ import java.util.*;
 
 class Solution {
     public long solution(int n, int[] times) {
-        long answer = 0;
-        long left = 1;
-        long right = 0;
-        
-        for(int time : times){
-           right = Math.max(right, (long)time*(long)n);
-        }
         long mid = 0;
+        long answer = 0;
         
-        while (left <= right){
-             mid = (left + right)/2;
+        Arrays.sort(times);
+        
+        long start = 0;
+        long end = (long)times[times.length-1] * n;
+
+        
+        while(start <= end){
+            mid = (start + end)/2;
             
-            long people = 0; 
+            long person = 0;
             for(int time : times){
-                people += mid /time;
+                person += mid/time;
             }
-            // System.out.println("mid: "+mid +"\n people: "+people);
             
-            if(people >= n){ // 처리량이 더많다, 시간이 남음
+            // 많이 처리 혹은 딱맞게 처리 -> 줄여주기
+            if(person >= n) {
+                end = mid -1;
                 answer = mid;
-                right = mid -1;
             }
-            else if(people < n){ // 처리량이 더 적다 , 시간 부족
-                left = mid +1;
-            }    
+            else start = mid + 1;   
         }
-        
         
         return answer;
     }
