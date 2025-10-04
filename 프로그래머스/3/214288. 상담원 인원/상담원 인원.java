@@ -1,103 +1,80 @@
-import java.io.*;
 import java.util.*;
 
 class Solution {
-    
-    int answer;
-    int lastPerson;
-    List<Integer>[] mento; 
-    int k;
-    int [][] reqs;
-    
-    public int solution(int K, int n, int[][] REQS) {
-        answer = 987654321;
-        k = K;
-        lastPerson = n - k;
-        mento = new ArrayList [k];
-        reqs = REQS;
-        
-        // 일단 한명씩은 다 추가해 놓기
-        for(int i=0; i<k; i++){
-            mento[i] = new ArrayList<>();
-            mento[i].add(0);
+    public int solution(int k, int n, int[][] reqs) {
+        // 1) 타입별로 요청 묶기: (start, dur)
+        List<int[]>[] byType = new ArrayList[k];
+        for (int t = 0; t < k; t++) byType[t] = new ArrayList<>();
+        for (int[] r : reqs) byType[r[2] - 1].add(new int[]{r[0], r[1]});
+        for (int t = 0; t < k; t++) {
+            byType[t].sort(Comparator.comparingInt(a -> a[0]));
         }
-        
-        make(0,0);
-        
-        return answer;
+
+        // 2) wait[t][m] 미리 계산해 캐시 (m: 1..n)
+        long[][] wait = new long[k][n + 1];
+        for (int t = 0; t < k; t++) {
+            for (int m = 1; m <= n; m++) {
+                wait[t][m] = simulate(byType[t], m);
+            }
+        }
+
+        // 3) 초기 배정: 각 타입 1명씩
+        int[] assigned = new int[k];
+        Arrays.fill(assigned, 1);
+        int remain = n - k;
+
+        // 4) (delta, type, nextM) 최대힙: 한 명 더 줄 때 줄어드는 대기합이 큰 순
+        class Node {
+            long delta; int t; int nextM;
+            Node(long d, int t, int m) { this.delta = d; this.t = t; this.nextM = m; }
+        }
+        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> Long.compare(b.delta, a.delta));
+
+        for (int t = 0; t < k; t++) {
+            // m: 1 -> 2 의 마진
+            if (n >= 2) {
+                long d = wait[t][1] - wait[t][2];
+                pq.offer(new Node(d, t, 2));
+            } else {
+                pq.offer(new Node(0L, t, 2)); // 사실상 사용 안 됨
+            }
+        }
+
+        // 5) 남은 멘토를 한 명씩 배정
+        while (remain-- > 0 && !pq.isEmpty()) {
+            Node cur = pq.poll();
+            assigned[cur.t] = cur.nextM;
+
+            // 다음 마진도 계산해서 다시 넣기 (m: nextM -> nextM+1)
+            if (cur.nextM + 1 <= n) {
+                long d = wait[cur.t][cur.nextM] - wait[cur.t][cur.nextM + 1];
+                pq.offer(new Node(d, cur.t, cur.nextM + 1));
+            }
+        }
+
+        // 6) 최종 합산
+        long ans = 0;
+        for (int t = 0; t < k; t++) ans += wait[t][assigned[t]];
+        return (int) ans;
     }
-    
-    
-    void make (int idx, int sidx){
-        
-        // 기저조건
-        if(sidx >= lastPerson){
-            // 검증함수 호출
-            answer = Math.min(answer, check());
-            return;         
+
+    // 유형별 시뮬: 멘토 m명일 때 총 대기합
+    private long simulate(List<int[]> reqsOfType, int m) {
+        if (reqsOfType.isEmpty()) return 0L;
+        PriorityQueue<Integer> pq = new PriorityQueue<>(); // 멘토의 "다음 가용 시각"
+        for (int i = 0; i < m; i++) pq.offer(0);
+
+        long waitSum = 0;
+        for (int[] r : reqsOfType) {
+            int start = r[0], dur = r[1];
+            int earliest = pq.poll();
+            if (earliest <= start) {
+                pq.offer(start + dur);
+            } else {
+                waitSum += (earliest - start);
+                pq.offer(earliest + dur);
+            }
         }
-        else if(idx >= k){ // 선택 실패
-            return;
-        }
-        
-        // 재귀부분
-        // 선택 - 중복 또 선택 가능하도록
-        mento[idx].add(0);
-        make(idx, sidx +1);
-        mento[idx].remove(0);
-            
-        // 미선택
-        make(idx+1, sidx);
-        
-        
+        return waitSum;
     }
-    
-    int check () {
-        
-        int sum = 0;
-        List<Integer>[] newList = new ArrayList[k];
-        
-        for(int i=0; i<k; i++){
-            newList[i] = new ArrayList<>(mento[i]);
-        }
-        
-        
-       loop: for(int[] req : reqs){
-            int type = req[2];
-            int start = req[0];
-            int time = req[1];
-            
-            List<Integer> currs = newList[type-1];
-           
-            int minIdx = 0;
-            int minEtime = 987654321;
-            
-            for(int s=0; s<currs.size(); s++){
-                
-                int etime = currs.get(s);
-                
-                // 들어갈 수 있으면, 바로 넣어주기
-                if(etime <= start){
-                    currs.set(s, start + time);
-                    continue loop;
-                }
-                
-                // 젤 들어갈만한 곳 업데이트 해놓기
-                if(etime < minEtime){
-                    minIdx = s;
-                    minEtime = etime;
-                }                   
-            }// end of curr
-           
-           // 바로 넣어주기 실패해서 여기까지 왔으면
-            currs.set(minIdx, minEtime + time);
-            sum += minEtime - start;
-          
-        }// end of req
-          
-        System.out.println(sum);
-        return sum;
-    }
-    
-    
 }
