@@ -89,7 +89,7 @@ class Solution {
         }
         
         for(int i=start; i<=end; i++){
-           System.out.println(on[size-1][i]);
+           // System.out.println(on[size-1][i]);
             answer = Math.min(answer, on[size-1][i]);
         }
         
