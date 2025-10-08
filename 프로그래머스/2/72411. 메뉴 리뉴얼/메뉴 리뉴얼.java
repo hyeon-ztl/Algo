@@ -11,18 +11,7 @@ class Solution {
         maxValue = new int [11];
         
         for(int i=0; i<orders.length; i++){
-            set = new HashSet <> ();
             DFS(i, 0, "");
-            
-            for(String word : set){
-                if(map.containsKey(word)){
-                    map.put(word, map.get(word)+1);
-                }
-                else {
-                    map.put(word, 1);
-                }
-                maxValue[word.length()] = Math.max(maxValue[word.length()], map.get(word));
-                }      
             }
         
 
@@ -45,8 +34,8 @@ class Solution {
         
         Arrays.sort(answer);
         
-        // System.out.println(Arrays.toString(maxValue));
-        // System.out.println(map.toString());
+        System.out.println(Arrays.toString(maxValue));
+        System.out.println(map.toString());
 
         
         return answer;
@@ -68,24 +57,16 @@ class Solution {
         
         for(int i=0; i<sizeOfC ; i++){
             if(wordSize == COURSE[i]){
-                
-                
+                // 정렬해주기
                 char[] tmp = word.toCharArray();
                 Arrays.sort(tmp);
                 String finish = new String(tmp);
                 
-                set.add(finish);
-                
-//                 // 맵전용메서드 외우기
-//                 if(map.containsKey(word)){
-//                     map.put(word, map.get(word)+1);
-//                 }
-//                 else {
-//                     map.put(word, 1);
-//                 }
-                
-//                 maxValue[COURSE[i]] = Math.max(maxValue[COURSE[i]], map.get(word));
-//                 break;    
+                // 맵에 넣어주고
+                map.put (finish, map.getOrDefault(finish, 0) + 1);
+                // 각 코스 수에서 가장 큰 빈도 업데이트
+                maxValue[COURSE[i]] = Math.max(maxValue[COURSE[i]], map.get(finish));
+                break;    
             }        
         }
         
