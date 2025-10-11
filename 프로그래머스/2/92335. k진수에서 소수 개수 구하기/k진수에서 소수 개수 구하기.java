@@ -10,72 +10,46 @@ class Solution {
         
         long zinsu = makeZinsu(n, k);
 
-        // System.out.println(zinsu);
+        
+        long seg = 0;
+        long mul = 1;
 
-        long doub = 1;
-        long tmp = 0;
         
         while(zinsu > 0){
-            doub *= 10;
-            long pow = zinsu % doub;
             
-            // 이전 연산한것과 같다 -> 0 발견
-            if(tmp == pow){
-            // System.out.println(zinsu);
-            // System.out.println(tmp);
+            long num = zinsu % 10L;
+            
+            if(num == 0){
                 
-                // 진수인지 확인하기
-                if(isPrime(tmp)){
+                if(seg > 1 && isPrime(seg)) {                    
                     answer ++;
-                    // System.out.println("prime: "+ tmp);
                 }
                 
-                // 그부분 잘라내주기
-                zinsu -= tmp;
-                while(zinsu % 10 == 0  && zinsu != 0 ){
-                    zinsu /= 10;                
-                }
-                
-                // tmp랑 doub 초기화
-                tmp = 0;
-                doub = 1;
+                seg = 0;
+                mul = 1;
             }
             
-            // 아니라면 업데이트해주기
             else {
-                tmp = pow;
-            }             
+                // 저장해주기
+                seg += mul * num;
+                mul *= 10;
+            }
+            
+            zinsu /= 10;
+
         }
         
-        
+        // seg가 맨마지막에 남을테니 한번 더 처리
+        if(seg != 0 && isPrime(seg)){
+            answer ++;
+        }
         
 
-        // System.out.println(isPrime(12));
         
         return answer;
     }
     
     long makeZinsu(int n, int k){
-        
-//         long zinsu = 0;
-//         // n보다 작으면서 가장 큰 k의 배수 찾기
-//         int doub = 0;
-        
-//         while(Math.pow(k, doub) <= n){
-//             doub ++;
-//         }
-//         doub --; // 선넘은거 되돌려주고
-        
-//         // 이제 진수 만들어주기
-//         while(doub >= 0){
-//             // 우선 진수에 나눈 값 더해주고
-//             zinsu *= 10;
-//             zinsu += n / Math.pow(k, doub);
-            
-//             // n에 나머지 넣어주기
-//             n %= Math.pow(k, doub);
-//             doub --;
-//         }
         
         long zinsu = 0;
         int idx = 0;
@@ -85,25 +59,9 @@ class Solution {
             n /= k;
         }
         
-
         return zinsu + ((long)n * (long)Math.pow(10, idx++));        
     }
     
-    int makeTen (long zinsu, int k){
-        long ten = 0;
-        int doub = 0;
-        
-        while(zinsu > 0){
-            long tmp = zinsu % 10; // 자릿수 추출
-            ten += tmp * Math.pow(k, doub); // 그 자릿수 
-            zinsu -= tmp;
-            zinsu /= 10;
-            doub ++;
-        }
-        
-        
-        return (int)ten;
-    }
     
     
     boolean isPrime(long num){
