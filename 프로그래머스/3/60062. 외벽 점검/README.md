@@ -1,14 +1,14 @@
 # [level 3] 외벽 점검 - 60062 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/60062#) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/60062) 
 
 ### 성능 요약
 
-메모리: 81.4 MB, 시간: 6.01 ms
+메모리: 93.6 MB, 시간: 72.16 ms
 
 ### 구분
 
- > 
+코딩테스트 연습 > 2020 KAKAO BLIND RECRUITMENT
 
 ### 채점결과
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 10월 17일 22:53:05
+2025년 10월 17일 23:40:49
 
 ### 문제 설명
 
