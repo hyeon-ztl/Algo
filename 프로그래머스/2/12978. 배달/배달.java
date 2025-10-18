@@ -1,82 +1,93 @@
 import java.io.*;
-import java. util. *;
+import java.util.*;
 
 class Solution {
     
     class Node implements Comparable<Node> {
-        int v;
-        int w;
+        int v, dis;
         
-        Node (int v, int w){
-            this. v= v;
-            this. w = w;
+        Node (int v, int dis){
+            this.v = v;
+            this.dis = dis;
         }
         
         @Override
-        public int compareTo(Node o){
-            return this.w-o.w;
+        public int compareTo (Node o){
+            return this.dis- o.dis;
         }
+        
     }
     
-    int [] dist;
-    List<Node> [] adjList;
-    int n;
+    int N;
+    int K;
+    int [][] ROAD;
     
-    public int solution(int N, int[][] road, int K) {
-        
-        int answer = 0;
-        n = N;
-        
-        int INF = 987654321;
+    List<Node> [] list;
+    PriorityQueue<Node> q ;
 
-        dist = new int [n+1];
-        adjList = new ArrayList [n+1] ;
+    public int solution(int n, int[][] road, int k) {
+        int answer = 0;
+
+         N = n;
+         K = k;
+         ROAD = road;
         
-        Arrays.fill(dist, INF);
-        for(int i=1; i<=n; i++){
-            adjList [i] = new ArrayList<>();
+        list = new ArrayList[n];
+        
+        for(int i=0; i<n; i++){
+            list[i] = new ArrayList<>();
         }
         
-        for(int[] r : road){
-            int start = r[0];
-            int end = r[1];
-            int d = r[2];
+        for(int [] way : road){
+            int a = way[0]-1;
+            int b = way[1]-1;
+            int dis = way[2];
             
-            adjList[start].add(new Node(end, d));
-            adjList[end].add(new Node(start, d));
+            list[a]. add(new Node(b, dis));
+            list[b]. add(new Node(a, dis));        
         }
         
-        dikstra(1);
+        djstra(0);
         
-        for(int dis : dist){
-            if(dis <= K) answer ++;
+        for(int d : dist){
+            if(d <= k){
+                answer ++;
+            }
         }
 
         return answer;
     }
     
-    void dikstra(int start){
-        PriorityQueue<Node> q = new PriorityQueue<>();
-        boolean visited [] = new boolean [n+1];
+    boolean [] visited ;
+    int dist [];
+
+    
+    void djstra (int start) {
+        q = new PriorityQueue<>();
         
-        q.add(new Node (start, 0));
+        visited = new boolean [N];
+        dist = new int [N];
+        int INF = 987654321;
+        Arrays.fill(dist, INF);
+       
         dist [start] = 0;
         
+        
+        q.add(new Node(start, 0));
+        
         while(!q.isEmpty()){
-            Node curr = q.poll();
             
+            Node curr = q.poll();
             if(visited[curr.v]) continue;
-            visited[curr.v] = true;
-
-            for(Node node : adjList[curr.v]){
-                if(visited[node.v]) continue;
-                if(dist[node.v] > dist[curr.v] + node.w){
-                    dist[node.v] = dist[curr.v] + node.w;
-                    q.add(new Node(node.v, dist[node.v]));
+            visited [curr.v] = true; // 방문체크
+            
+            for(Node n : list[curr.v]){
+                if(!visited[n.v] && dist[n.v] > dist[curr.v] + n.dis ){
+                    dist[n.v] = dist[curr.v] + n.dis;
+                    q.add(new Node(n.v, dist[n.v]));
                 }
             }
             
         }
-        
     }
 }
