@@ -1,6 +1,6 @@
 # [level 5] 상품을 구매한 회원 비율 구하기 - 131534 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131534?language=oracle) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/131534) 
 
 ### 성능 요약
 
@@ -16,7 +16,7 @@ Empty
 
 ### 제출 일자
 
-2025년 10월 19일 00:55:06
+2025년 10월 19일 09:09:58
 
 ### 문제 설명
 

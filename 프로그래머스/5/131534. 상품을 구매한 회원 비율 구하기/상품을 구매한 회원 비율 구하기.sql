@@ -1,21 +1,16 @@
-SELECT
-  EXTRACT(YEAR  FROM o.sales_date) AS year,
-  EXTRACT(MONTH FROM o.sales_date) AS month,
-  COUNT(DISTINCT o.user_id)        AS purchased_users,
-  ROUND(
-    COUNT(DISTINCT o.user_id) /
-    (SELECT COUNT(*)
-       FROM user_info
-      WHERE joined >= DATE '2021-01-01'
-        AND joined <  DATE '2022-01-01'
-    ), 1
-  ) AS purchased_ratio
-FROM online_sale o
-JOIN user_info u
-  ON u.user_id = o.user_id
- AND u.joined >= DATE '2021-01-01'
- AND u.joined <  DATE '2022-01-01'
-GROUP BY
-  EXTRACT(YEAR  FROM o.sales_date),
-  EXTRACT(MONTH FROM o.sales_date)
-ORDER BY year, month;
+-- 코드를 입력하세요
+SELECT EXTRACT(YEAR FROM O.SALES_DATE) AS YEAR, EXTRACT(MONTH FROM O.SALES_DATE) AS MONTH, 
+COUNT (DISTINCT O.USER_ID),
+ROUND (COUNT(DISTINCT O.USER_ID) / 
+(   SELECT COUNT(*)
+    FROM USER_INFO 
+    WHERE JOINED >= DATE '2021-01-01' AND JOINED < DATE '2022-01-01' 
+), 1)
+
+FROM USER_INFO U 
+JOIN ONLINE_SALE O ON U.USER_ID = O.USER_ID
+WHERE U.JOINED >= DATE '2021-01-01' AND U.JOINED < DATE '2022-01-01' 
+-- AND SALES_DATE >=  DATE '2021-01-01' AND SALES_DATE < DATE '2022-01-01' 
+GROUP BY EXTRACT(YEAR FROM O.SALES_DATE), EXTRACT(MONTH FROM O.SALES_DATE)
+
+ORDER BY YEAR, MONTH;
