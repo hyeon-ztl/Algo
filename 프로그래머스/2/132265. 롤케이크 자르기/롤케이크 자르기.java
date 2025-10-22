@@ -1,36 +1,48 @@
-
-import java.util.HashMap;
-import java.util.Map;
+import java.io.*;
+import java.util.*;
 
 class Solution {
-
     public int solution(int[] topping) {
-
         int answer = 0;
-
-        Map<Integer, Integer> map1 = new HashMap<>();
-        Map<Integer, Integer> map2 = new HashMap<>();
-
-        for (int i = 0; i < topping.length; i++) {
-            map2.put(topping[i], map2.getOrDefault(topping[i], 0) + 1);
-        }
-
-        for (int i = 0; i < topping.length - 1; i++) {
-
-            map1.put(topping[i], map1.getOrDefault(topping[i], 0) + 1);
-
-            int cnt = map2.getOrDefault(topping[i], 0);
-            if (cnt > 1) {
-                map2.put(topping[i], cnt - 1);
-            } else {
-                map2.remove(topping[i]);
+        
+        Set<Integer> leftSet = new HashSet<>();
+        Set<Integer> rightSet = new HashSet<>();
+        
+        int size = topping.length;
+        
+        int [] leftArr = new int [size];
+        int [] rightArr = new int [size];
+        
+        int leftPrev = 0;
+        int rightPrev = 0;
+        
+        for (int l = 0; l < size; l++){
+            int r = size - l -1;
+            
+            // left
+            if(!leftSet.contains(topping[l])){ // 미포함
+                leftSet.add(topping[l]);
+                leftArr [l] = ++leftPrev;
             }
-
-            if (map1.keySet().size() == map2.keySet().size()) {
-                answer += 1;
+            else {
+                leftArr [l] = leftPrev;
+            }
+            
+            // right
+            if(!rightSet.contains(topping[r])){
+                rightSet.add(topping[r]);
+                rightArr [r] = ++ rightPrev;
+            }
+            else {
+                rightArr [r] = rightPrev;
             }
         }
-
+        
+        for(int i=0; i<size-1; i++){
+            if(leftArr[i] == rightArr[i+1]) answer ++;
+        }
+        
+        
         return answer;
     }
 }
