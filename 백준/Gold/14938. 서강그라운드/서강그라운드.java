@@ -38,7 +38,7 @@ public class Main {
 
         final int INF = 987654321;
 
-        int [] item = new int [num];
+        item = new int [num];
 
         //----------
         st = new StringTokenizer(br.readLine());
@@ -67,24 +67,18 @@ public class Main {
             list[b-1].add(new Node(a-1, w));
         }
 
-        int answer = 0;
+        answer = 0;
         // ----------- input 완료
         for(int i=0; i<num; i++){
             djstra(i);
-
-            int tmpCnt = 0;
-            for(int j=0; j<num; j++){
-                if(canGo[i][j]) tmpCnt += item[j];
-            }
-
-            answer = Math.max (answer, tmpCnt);
         }
 
         System.out.println(answer);
 
 
     }
-
+    static int answer ;
+    static int [] item;
     static List<Node> [] list;
     static int [][] distance;
     static boolean [][] visited;
@@ -94,15 +88,21 @@ public class Main {
     static void djstra (int start) {
         q = new PriorityQueue<>();
 
+        int cnt = 0;
+
         q.add(new Node(start, 0));
         distance[start][start] = 0;
-        visited[start][start] = true;
 
         while(!q.isEmpty()){
             Node curr = q.poll();
-//            visited[curr.v][start] = 
-                    visited[start][curr.v] = true;
-            canGo[curr.v][start] = canGo[start][curr.v] = true;
+            
+            if (curr.dis != distance[start][curr.v]) continue;
+            
+            if(visited[start][curr.v]) continue; // 방문햇으면 넘어가
+            visited[start][curr.v] = true;
+
+
+            cnt += item[curr.v];
 
             for(Node o : list[curr.v]){
                 if(visited[start][o.v]) continue; // 방문햇으면 넘어가
@@ -110,14 +110,14 @@ public class Main {
                 int tmp = o.dis + distance[start][curr.v];
                 if(tmp > range) continue;
 
-//                distance[o.v][start] = 
-                        distance[start][o.v] = tmp;
-
+                distance[start][o.v] = tmp;
                 q.add(new Node(o.v, distance[start][o.v]));
             }
 
 
         } // end of while
-    }
+
+        answer = Math.max(answer, cnt);
+    }// end of mathod
 
 }
