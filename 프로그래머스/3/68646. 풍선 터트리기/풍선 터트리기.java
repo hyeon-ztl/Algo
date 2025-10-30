@@ -8,30 +8,24 @@ class Solution {
         int answer = 2;
         int size = a .length;
         
-        TreeSet<Integer> leftSet = new TreeSet<>();        
-        TreeSet<Integer> rightSet = new TreeSet<>();
+        int [] L = new int [size];
+        int [] R = new int [size];
         
-        leftSet.add(a[0]);
+        int leftMin = Integer.MAX_VALUE;
+        int rightMin = Integer.MAX_VALUE;
         
-        for(int i=2; i<size; i++){
-            rightSet.add(a[i]);
+        
+        
+        
+        for(int i=0; i<size; i++){
+            L[i] = leftMin = Math.min(leftMin, a[i]);
+            R[size-1-i] = rightMin = Math.min(rightMin, a[size-1-i]);
         }
         
         for(int i=1; i<size-1; i++){
             int curr = a[i];
-
-            int leftMin = leftSet.first();
-            int rightMin = rightSet.first();
             
-            // 이후를 위한 작업
-            int next = a[i+1];
-            rightSet.remove(next);
-            leftSet.add(curr);       
-            
-            // 정답 산정
-            if(leftMin < curr && rightMin < curr) continue;
-            answer ++;
-            
+            if(curr == L[i] || curr == R[i]) answer++;
         }
         
         
