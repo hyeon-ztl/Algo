@@ -1,90 +1,95 @@
 import java.io.*;
 import java.util.*;
 
+
+
 class Solution {
+    
+    String[] ORDERS ;
+    int [] COURSE ;
+    Map<String, Integer> map;
+    int tmpMax ;
+    PriorityQueue tmpQ;
+    
     public String[] solution(String[] orders, int[] course) {
         
         ORDERS = orders;
         COURSE = course;
-        sizeOfC = course.length;
-        map = new HashMap<>();
-        maxValue = new int [11];
         
-        for(int i=0; i<orders.length; i++){
-            DFS(i, 0, "");
-            }
+//         int courseSize = course.length;
+//         comArr = new HashMap [courseSize];
+//         for(int i=0; i<courseSize; i++){
+//             comArr[i] = new HashMap<>();
+//         }
         
+                
+        PriorityQueue<String> q = new PriorityQueue<>();
 
         
-        List<String> list = new ArrayList<>();
-    
-        for(String k : map.keySet()){
-            int curr = map.get(k);
-            if(curr < 2) continue;
-            if(maxValue[k.length()] == curr){
-                list.add(k);
-            }
-        }
-       
-        String[] answer = new String [list.size()];
-        
-        for(int i=0; i<list.size(); i++){
-            answer[i] = list.get(i);
-        }
-        
-        Arrays.sort(answer);
-        
-        System.out.println(Arrays.toString(maxValue));
-        System.out.println(map.toString());
 
+        for(int c : course){
+            map = new HashMap<>();
+            tmpMax = 0;
+            
+            for(String o : orders){
+                combine (o, c, new int[c], 0, 0);
+            }
+            
+            if(tmpMax < 2) continue;
+                
+            // 여기서 최대 비교 해줘야함 
+            for(String key : map.keySet()){
+                if(map.get(key) == tmpMax){
+                    q.add(key);
+                } 
+            }         
+        }
+        
+        String[] answer = new String[q.size()];
+        
+        int idx = 0;
+        while(!q.isEmpty()){
+            answer[idx++] = q.poll();
+        }
+        
         
         return answer;
     }
     
-    Map <String, Integer> map ;
-    String [] ORDERS ;
-    int [] COURSE ;
-    int sizeOfC;
-    int [] maxValue; 
-
-    Set<String> set ;
     
-    // 조합 만드는 DFS
-    void DFS(int cust, int idx, String word) {
-        
+    void combine (String o, int c, int[] com, int idx, int sidx) {
         // 기저조건
-        int wordSize = word.length();
-        
-        for(int i=0; i<sizeOfC ; i++){
-            if(wordSize == COURSE[i]){
-                // 정렬해주기
-                char[] tmp = word.toCharArray();
-                Arrays.sort(tmp);
-                String finish = new String(tmp);
-                
-                // 맵에 넣어주고
-                map.put (finish, map.getOrDefault(finish, 0) + 1);
-                // 각 코스 수에서 가장 큰 빈도 업데이트
-                maxValue[COURSE[i]] = Math.max(maxValue[COURSE[i]], map.get(finish));
-                break;    
-            }        
-        }
-        
-        if(idx >= ORDERS[cust].length()) return;
+        if(sidx >= c){
+            useMap(o, com);
             
-            
+            return;
+        } // 완성
+        
+        if(idx >= o.length()) return;
+        
         
         // 재귀부분
-            //선택하거나 
-            DFS(cust, idx+1, word + ORDERS[cust].charAt(idx));
+        combine(o, c, com, idx+1, sidx); // 미선택
         
-            // 안하거나
-            DFS(cust, idx+1, word);
-
-
-        
+        com[sidx] = idx;
+        combine(o, c, com, idx+1, sidx+1);// 선택   
     }
     
-    
-    
+    void useMap (String o, int[] com) {
+        
+        tmpQ = new PriorityQueue<>();
+        
+        for(int c : com){
+            tmpQ.add(o.charAt(c));
+        }
+        
+        String tmp = "";
+        while(!tmpQ.isEmpty()){
+            tmp += tmpQ.poll();
+        }
+        
+        
+        map.put(tmp, map.getOrDefault(tmp ,0) +1); // 등장횟수 업데이트 해주기
+        tmpMax = Math.max(tmpMax, map.get(tmp) ); // 최댓값 미리 업데이트
+    }
 }
