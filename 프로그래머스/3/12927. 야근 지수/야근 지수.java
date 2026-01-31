@@ -1,117 +1,117 @@
 import java.io.*;
 import java.util.*;
 
-/*
-핵심은 works들의 표준편차를 줄이는것
-일단 숫자들을 정렬시키고 큰놈부터 그리디하게 깎아주기
-
-1-1. 지금 갖고있는 숫자를 다음숫자와 같은 숫자로 만들어주기 
- -> 0번 idx 부터 N번까지는 항상 다 같은 숫자
-1-2. 그러다가 내가 갖고 있는 N이 부족하면, 그 갖고 있는 최소한의 N을 쪼개서 사용
- -> 모든 숫자를 다 건드릴 수 있으면 나눈값을 다 빼주고, 나머지는 남은애들한테 분배
-
-2. 근데 다음숫자를 찾다가, 만약 모든숫자가 다 같은 상황이 주어지면 
-index out bound 에러 발생 -> 맨마지막 원소를 한칸 추가해서 0으로 초기화 해놓기
-
-3.
-
-*/
-
 class Solution {
-    public long solution(int n, int[] input) {
+
+		// class Node implements Comparable<Node> {
+		// 	int time;
+
+		// 	Node (int time) {
+		// 		this. time = time;
+		// 	}
+
+		// 	@Override
+		// 	public int compareTo (Node o) {
+		// 		return - this.time + o.time;
+		// 	}
+		// }
+
+	
+	
+    public long solution(int n, int[] works) {
         long answer = 0;
-        int N = n;
-        // 정렬
-        Arrays.sort(input);
-        int [] works = new int [input.length+1];
-        int sum = 0;
-        
-        // 내림차순으로 바꿔주기
-        for(int i=0; i<works.length-1; i++){
-            works[i] = input[input.length-1-i];
-            sum += works[i];
-        }
-        
-        /*
-         젤 비슷하게 만들어주는것 
-         같은숫자를 처리하려는게 아니라 같은숫자로 만들어주는게 핵심이다!
-         
-        */
-        
 
-        int idx = 0;
-        
-        // 만약 일할 시간이 많이 남았으면 바로 return 
-        if(sum <= N){
-            return answer;
-        }
+				PriorityQueue<Integer> pq = new PriorityQueue<>(Collections.reverseOrder()); 
 
-        while(N>0){
-            int now = works[idx];
-            int next = works[idx+1];
-            
-            // 둘이 같은 숫자라면 뒤로 몇개까지 같은숫자인지 체크
-            if(now == next){ 
-                while(now == next){
-                    idx ++;
-                    next = works[idx +1];
-                }
-            }
-            
-            // 지금까지 같은숫자의 갯수를 전부 다음숫자로 깎아만큼 
-            // N이 여유가있다면 바로 깎아주기
-            if((now - next)*(idx+1) <= N){
+				for(int work : works){
+					pq.add(work);
+				}
+
+			
+
+
+			/*
+				예외사항
+				q에 1개만 있거나
+				이미 전부 0이된 상황
+			*/
+
+			// q에 1개만 남았을때 예외 처리
+			if(pq.size() == 1){
+
+				int tmp = pq.poll() - n;
+				if(tmp < 0) tmp = 0;
+				
+				return tmp * tmp;
+			}
+
+			
+			while(n > 0){
+				int tmp = pq.poll();
+				int top = pq.peek();
                 
-                // 깎아주기
-                int fromZero = 0;
-                while(fromZero <= idx){
-                    works[fromZero++] = next;
-                }
-                N -= (now - next)*(idx+1);
-            } // end of If
-            
-            
-            // 아니면 갖고있는 만큼 분배해서 깎아주고 종료하기
-            else {
-                // 깎아줄 숫자 정하기, 근데 모든 숫자를 다깎아줄거라곤 장담못함
-                int minus = N/(idx+1);
-                int mod = N%(idx+1);
+                // System.out.println(tmp + " " + top);
+
+				if(tmp == 0) return 0; // 전부 0이 돼버리면 n이 남았어도 바로 터뜨리기
+
+				int minus = tmp - top + 1;
+				if(n >= minus) {
+                    if(tmp - minus > 0){
+                        n -= minus;
+					    pq.add(tmp - minus);
+                    }
+                    else {
+                        n -= tmp;
+                        pq.add(0);
+                    }
+
+				}
+				else { // 남은 시간 종료
+					pq.add(tmp - n);
+                    n = 0;
+
+			// for(int time : pq){
+			// 	System.out.print(time);
+			// }
+					break;
+				}
+				
                 
-                // 모든 숫자를 다 깎을 수 있을때
-                if(minus > 0){
-                    
-                    int fromZero = 0;
-                    while(fromZero <= idx){
-                        works[fromZero++] -= minus;
-                    }
-                    // 나머지도 빼주기 (짬처리)
-                    if(mod!=0) {
-                        int modIdx = 0;
-                        while(mod > 0){
-                            works[modIdx++] -= 1;
-                            mod --;
-                        }
-                    }
-                    
-                    N = 0;
-                }
-                // 모든 숫자를 다 깎을 순 없을때
-                else {
-                    int fromZero = 0;
-                    while(N > 0){
-                        works[fromZero++] -= 1;
-                        N --;
-                    }
-                }
-            
-                break;
-            }
-        }// end of while
-        
-        for(int work : works){
-            answer += work*work;
-        }
-        
+			// for(int time : pq){
+			// 	System.out.print(time);
+			// }
+			// System.out.println();
+
+			}
+
+			// 피로도 계산
+			for(int time : pq){
+				answer += time * time;
+
+			}
+				
+				
         return answer;
+
+			
+			
     }
 }
+/*
+자나깨나 범위조심 !!
+
+
+야근 시작시점의 남은작업량의 제곱
+
+1시간 1의 양
+n시간동안 일할거고
+남은 작업량의 제곱 -> 젤 큰 숫자를 계속 줄여주면되네
+pq를 쓰는데 큰것부터 있도록 
+1씩 줄여주지말고 peek한거의 -1 만큼까지 줄여주면될듯
+
+젤큰거 뽑음
+peek한애 -1 만큼 줄임
+그리고 다시 넣음
+비슷하네 구름공원이랑
+
+*/
