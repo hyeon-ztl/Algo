@@ -15,26 +15,18 @@ class Solution {
         }
         
         void makeSell (int tmp) {
-            int extra = (tmp * 10); // 칫솔 개당 백원
-            answer[idx] += tmp * 90;
-            
-            if(!parents.equals("-") && extra != 0) map.get(parents).addFee(extra);
+            this. sell += tmp * 100; // 칫솔 개당 백원
         }
         
         void addFee (int fee) {
-            int extra = fee / 10;
-            answer [idx] += fee - extra;
-            
-            if(!parents.equals("-") && extra != 0) map.get(parents).addFee(extra);
-            
+            this. sell += fee; // 자식에게 받은 수수료 누적해주기 
         }
     }
     Map<String, Node> map = new HashMap<>();
-    int [] answer ;
     
     public int[] solution(String[] enroll, String[] referral, String[] seller, int[] amount) {
         int memSize = enroll.length;
-        answer = new int [memSize];
+        int[] answer = new int [memSize];
         
         // 그래프 만들어주기
         for(int e=0; e<memSize; e++){
@@ -46,7 +38,18 @@ class Solution {
             map.get(seller[s]).makeSell(amount[s]);
         }
         
-
+        for(int e=memSize-1; e>=0; e--){
+            Node curr = map.get(enroll[e]);
+            
+            //내가 번돈 fix
+            int extra = curr.sell / 10;
+            answer[e] = curr.sell -extra;;
+            
+             // 부모 있으면 상납해주기
+            if(!curr.parents.equals("-")){
+                map.get(curr.parents).addFee(extra);
+            }
+        }        
         
         return answer;
     }
