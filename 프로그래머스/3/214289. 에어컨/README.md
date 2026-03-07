@@ -1,14 +1,14 @@
 # [level 3] 에어컨 - 214289 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/214289#fn1) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/214289) 
 
 ### 성능 요약
 
-메모리: 73.6 MB, 시간: 12.60 ms
+메모리: 79.9 MB, 시간: 11.89 ms
 
 ### 구분
 
- > 
+코딩테스트 연습 > 2023 현대모비스 알고리즘 경진대회 예선
 
 ### 채점결과
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2025년 10월 05일 23:10:43
+2026년 03월 07일 09:21:03
 
 ### 문제 설명
 

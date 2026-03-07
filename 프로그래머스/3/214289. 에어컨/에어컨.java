@@ -1,100 +1,74 @@
 import java.io.*;
 import java.util.*;
 
+/*
+5 ~ 15 사이
+5 or 1 소비
+*/
+
 class Solution {
-    public int solution(int temperature, int T1, int T2, int a, int b, int[] onboard) {
-
-        // dp 돌리기 수월하게 0부터로 올림해주기
-        int tem = temperature + 10;
-        int t1 = T1 + 10;
-        int t2 = T2 + 10; 
-        
-        
+    public int solution(int temp, int t1, int t2, int a, int b, int[] onboard) {
         int size = onboard.length;
-        int on [][] = new int [size][51];
         
-        int INF = 987_654_321;
+        temp += 10;
+        t1 += 10;
+        t2 += 10;
         
-        
-        for(int i=0; i<size; i++){
-            Arrays.fill(on[i], INF);
-        }
-        
-        on[0][tem] = 0;
+        int [][] dp = new int [size][51]; // index 온도 항상 -10 해주기
+        int bigNum = Integer.MAX_VALUE;
+        int answer = bigNum;
 
-        for(int i=0; i<size-1; i++){
-            
-            // 미탑승
+        
+        for(int [] d: dp)
+        Arrays.fill(d, bigNum);
+        
+        // 0분 설정해주기
+        dp[0][temp] = 0; // 소비전력은 온도가 올라갈때 동시반영해주기
+        
+        for(int time=0; time<size-1; time++){
             int start = 0;
             int end = 50;
-
-            // 탑승                    
-            if(onboard[i] == 1){
-                start = t1;
-                end = t2;            
-            }
-                for(int j=start; j<=end; j++){
-                    
-                /*
-                j 는 현재 온도
-                dp니까 어떤방향으로 옮긴다는 생각 x
-                현재온도
-                tem = j : 그대로 유지는 0, 위 아래 갈때는 a 
-                tem > j : 그대로 유지는 b, 위로 0, 아래로 a 
-                tem < j : 그대로 유지는 b, 위로 a, 아래로 b 
-                */
-                    if(on[i][j] == INF) continue;
-                    
-                    // 현재 온도에 따라 어떻게 작업을 쳐줘야할지 정하는 부분
-                    int just = 0;
-                    int up = a;
-                    int down = a;
-                    
-                    if(tem > j){
-                        just = b;
-                        up = 0;
-                        down = a;
-                    }
-                    else if(tem < j){
-                        just = b;
-                        up = a;
-                        down = 0;
-                    }
-                    
-                    // up                                        
-                    if(j+1 <= 50){
-                        on[i+1][j+1] = Math.min(on[i+1][j+1], on[i][j] + up);
-                    }    
-                    // down
-                    if( j-1 >= 0 ){
-                        on[i+1][j-1] = Math.min(on[i+1][j-1], on[i][j] + down);
-                    } 
-
-                    // just
-                    on[i+1][j] = Math.min(on[i+1][j], on[i][j] + just);
-                    
-                } // end of j
             
-            } // end of i
-
+            if(onboard[time] == 1) { // 탑승중일땐 탑승중인 부분만 보기
+                start = t1;
+                end = t2;
+            }
+            
+            for(int on = start; on <= end; on++){
+                if(dp[time][on] == bigNum) continue;
+                int curr = dp[time][on];
+                
+                
+                // on - a
+                if(on+1 <= 50) dp[time+1][on+1] = Math.min(dp[time+1][on+1], curr+a);
+                if(on-1 >= 0) dp[time+1][on-1] = Math.min(dp[time+1][on-1], curr+a);
+                
+                // 유지 - b
+                dp[time+1][on] = Math.min(dp[time+1][on], curr + b);
+                
+                // off - 0
+                int offNext = 0;
+                if(on > temp) offNext = -1;
+                else if (on < temp) offNext = 1;
+                
+                if(on + offNext >= 0 && on + offNext <= 50)
+                dp[time+1][on+offNext] = Math.min(dp[time+1][on+offNext], curr);
+                
+            }
+        }
         
-        int answer = INF;
         int start = 0;
         int end = 50;
-
-        // 탑승                    
-        if(onboard[size-1] == 1){
+        if(onboard[size-1] == 1) {
             start = t1;
-            end = t2;            
+            end = t2;
         }
         
         for(int i=start; i<=end; i++){
-           // System.out.println(on[size-1][i]);
-            answer = Math.min(answer, on[size-1][i]);
+            answer = Math.min(answer, dp[size-1][i]);
         }
+
         
-        
-        
-        return answer;
+        return answer; 
     }
 }
