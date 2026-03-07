@@ -4,90 +4,73 @@ import java.util.*;
 class Solution {
     
     class Node implements Comparable<Node> {
-        int v, dis;
+        int idx;
+        int dis;
         
-        Node (int v, int dis){
-            this.v = v;
+        Node (int idx, int dis){
+            this.idx = idx;
             this.dis = dis;
         }
         
-        @Override
-        public int compareTo (Node o){
-            return this.dis- o.dis;
-        }
-        
+        public int compareTo(Node o){
+            return this.dis - o.dis;
+            }
     }
     
-    int N;
-    int K;
-    int [][] ROAD;
-    
+    PriorityQueue<Node> pq = new PriorityQueue<>(); 
     List<Node> [] list;
-    PriorityQueue<Node> q ;
-
-    public int solution(int n, int[][] road, int k) {
+    int [] distance; 
+    int N;
+    
+    public int solution(int N, int[][] road, int K) {
         int answer = 0;
-
-         N = n;
-         K = k;
-         ROAD = road;
+        this. N = N;
         
-        list = new ArrayList[n];
+        list = new ArrayList [N+1];
+        distance = new int [N+1];
         
-        for(int i=0; i<n; i++){
+        for(int i=1; i<N+1; i++){
             list[i] = new ArrayList<>();
         }
         
-        for(int [] way : road){
-            int a = way[0]-1;
-            int b = way[1]-1;
-            int dis = way[2];
-            
-            list[a]. add(new Node(b, dis));
-            list[b]. add(new Node(a, dis));        
+        for(int[] r : road){
+            list[r[0]] .add(new Node(r[1], r[2]));
+            list[r[1]].add(new Node(r[0], r[2]));
         }
         
-        djstra(0);
+        Arrays.fill(distance, bigNum);
+        djstra(new Node(1, 0));
         
-        for(int d : dist){
-            if(d <= k){
-                answer ++;
-            }
+        for(int d: distance){
+            if(d <= K) answer ++;
         }
 
         return answer;
     }
     
-    boolean [] visited ;
-    int dist [];
-
+        int bigNum = Integer.MAX_VALUE;
     
-    void djstra (int start) {
-        q = new PriorityQueue<>();
+    
+    void djstra (Node start) {
+        boolean [] visited = new boolean[N+1];
+        distance[start.idx] = 0;
         
-        visited = new boolean [N];
-        dist = new int [N];
-        int INF = 987654321;
-        Arrays.fill(dist, INF);
-       
-        dist [start] = 0;
+        pq.add(start);
         
-        
-        q.add(new Node(start, 0));
-        
-        while(!q.isEmpty()){
+        while(!pq.isEmpty()){
+            Node curr = pq.poll();
+            List<Node> tmpList = list[curr.idx];
+            // curr 방문체크? 
             
-            Node curr = q.poll();
-            if(visited[curr.v]) continue;
-            visited [curr.v] = true; // 방문체크
-            
-            for(Node n : list[curr.v]){
-                if(!visited[n.v] && dist[n.v] > dist[curr.v] + n.dis ){
-                    dist[n.v] = dist[curr.v] + n.dis;
-                    q.add(new Node(n.v, dist[n.v]));
+            for(Node o : tmpList){ // 갈 수 있는 경로들
+                if(visited[o.idx]) continue; // 이미 갔던곳이면 건너뛰어
+                if (distance[o.idx] > distance[curr.idx] + o.dis){
+                    distance[o.idx] = distance[curr.idx] + o.dis;
+                    pq.add(new Node(o.idx, distance[o.idx]));
                 }
-            }
+            } // end
             
         }
+        
     }
 }
