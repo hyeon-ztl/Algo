@@ -2,17 +2,18 @@ import java.io.*;
 import java.util.*;
 
 class Solution {
-    public int solution(int[] citations) {
-        int answer = 0;
-        Arrays.sort(citations);
-        int idx = 1;
-        int size = citations.length;
+    public int solution(int[] cit){
         
-        for(int c : citations){
-            
-            if(size <= c) return size;
-            size--;
-        }
+        int answer = 0;
+        
+        Arrays.sort(cit);
+        int size = cit.length;
+        for(int i=size-1; i>=0; i--){
+            int len = size - i; 
+            int h = Math.min(cit[i], len);
+            if(answer >= h) break;
+            answer = h;
+            }
         
         return answer;
     }
