@@ -3,96 +3,96 @@ import java.util.*;
 
 class Solution {
     
-    class Node implements Comparable<Node> {
-        int v;
-        int w;
-        String name;
+    final int S = 0;
+    final int A = 1;
+    final int B = 2;
+    
+    int answer ;
+    
+    int [][] arr ;
+    List<Node>[] list ;
+    
+    class Node implements Comparable<Node>{
+        int n;
+        int dis;
         
-        Node (int V, int W){
-            this.v = V;
-            this.w = W;
+        Node(int n, int dis) {
+            this. n = n;
+            this. dis = dis;
         }
         
         @Override
         public int compareTo (Node o) {
-            return this.w - o.w;
+            return this.dis - o.dis;
+        }
+    }
+    
+    int N;
+    
+    public int solution(int n, int s, int a, int b, int[][] fares) {
+        
+        N = n;
+        arr = new int [3][n+1];
+        list = new ArrayList[n+1];
+        for(int i=0; i<=n; i++) list[i] = new ArrayList<>();
+        
+        for(int[] f : fares){
+            int one = f[0];
+            int two = f[1];
+            int dis = f[2];
+            
+            list[one].add(new Node(two, dis));
+            list[two].add(new Node(one, dis));
         }
         
+        int bigNum = Integer.MAX_VALUE;
+        for(int i=0; i<3; i++){
+            Arrays.fill(arr[i], bigNum);
+        }
+        
+        
+        djstra(a, A);
+        djstra(b, B);
+        djstra(s, S);
+        
+        answer = bigNum;
+        
+        for(int i=1; i<n+1; i++){
+            answer = Math.min(answer, arr[S][i] + arr[A][i] + arr[B][i]);
+        }
+        
+        return answer;
     }
     
     boolean visited [];
-    int dis [][];
-    List<Node>[] adjList;
     
-    int a;
-    int b;
-    int n;
-              
-    public int solution(int nh, int s, int ah, int bh, int[][] fares) {
-        int answer = 0;
+    void djstra(int start, int k) {
+        PriorityQueue<Node> q = new PriorityQueue<>();
         
-        a = ah;
-        b = bh;
-        n = nh; 
-        
-        adjList = new ArrayList[n+1];
-        
-        for(int i=0; i<=n; i++){
-            adjList[i] = new ArrayList<>();
-        }
-        
-        for(int[] fare : fares){
-            int step1 = fare[0];
-            int step2 = fare[1];
-            int dist = fare[2];
-            
-            adjList[step1].add(new Node(step2, dist));
-            adjList[step2].add(new Node(step1, dist));
-        }
-        
-        dis = new int [n+1][n+1];
-        int MAX = 987654321;
-        
-        for(int i=0; i<=n; i++){
-            Arrays.fill(dis[i], MAX);
-        }
-        
-        for(int i=1; i<=n; i++){
-            djstra(i, i);
-        }
-        
-        answer = dis[s][a] + dis[s][b];
-        
-        for(int i=1; i<=n; i++){            
-            if(dis[s][i]<0 || dis[i][a] <0 || dis[i][b] <0) continue;
-            if(dis[s][i]>=MAX || dis[i][a] >=MAX || dis[i][b]>=MAX) continue;
-            answer = Math.min(answer, dis[s][i] + dis[i][a] + dis[i][b]);
-        }
-            
-        return answer;
-    }
+        arr[k][start] = 0;
+        visited = new boolean [N+1];
 
-    void djstra (int ver, int start) {
-        PriorityQueue<Node> pq = new PriorityQueue<>();
-        visited = new boolean [n+1];
+        q.add(new Node(start, 0));
         
-        dis[ver][start] = 0;
-        
-        pq.add(new Node(start, 0));
-        
-        while(!pq.isEmpty()){
-            Node curr = pq.poll();
-            if(visited[curr.v]) continue;
-            visited[curr.v] = true;
+        while(!q.isEmpty()){
+            Node curr = q.poll();
             
-            for(Node o : adjList[curr.v]){
-                if(visited[o.v]) continue;
-                if(dis[ver][o.v] < (dis[ver][curr.v]+o.w)) continue;
-                
-                dis[ver][o.v] = dis[ver][curr.v]+o.w;
-                pq.add(new Node(o.v, dis[ver][o.v]));
-            } 
+            if(visited[curr.n]) continue;
+            visited[curr.n] = true;
+            
+            List<Node> tmpList = list[curr.n];
+            
+            for(Node next : tmpList){
+                if(curr.dis + next.dis < arr[k][next.n]){
+                    arr[k][next.n] = curr.dis + next.dis;
+                    q.add(new Node(next.n, arr[k][next.n]));
+                }
+            }
         }
+        
+        
+        // new Node
+        
         
         
     }
